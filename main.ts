@@ -198,6 +198,81 @@ app.post('/changeRegion', async ({ query }: { query: any }) => {
     return new Response(JSON.stringify({ region: user.preferredRegion }), { status: 200 })
 })
 
+app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any }) => {
+    const id = body.meta.custom_data.cid
+
+    if (body.meta.event_name !== 'subscription_created') {
+        return new Response('Invalid event', { status: 401 })
+    }
+
+    if (!id) {
+        return new Response('Missing parameters', { status: 400 })
+    }
+
+
+    if (!body.data.attributes.product_name.startsWith('sukushocloud')) {
+        return new Response('Invalid product', { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id: id
+        }
+    })
+
+    if (!user) {
+        return new Response('User not found', { status: 404 })
+    }
+
+    const newPlan = body.data.attributes.variant_id
+
+    const isProLite = newPlan === 542402 || newPlan === 542478
+    const isProStd = newPlan === 542413 || newPlan === 542479
+    const isProUlt = newPlan === 542416 || newPlan === 542480
+
+    if (!isProLite && !isProStd && !isProUlt) {
+        return new Response('Invalid plan', { status: 401 })
+    }
+
+    if (isProLite) {
+        await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                plan: 'ProLite',
+                totalStorage: 61440
+            }
+        })
+    }
+
+    if (isProStd) {
+        await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                plan: 'ProStd',
+                totalStorage: 204800
+            }
+        })
+    }
+
+    if (isProUlt) {
+        await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                plan: 'ProUlt',
+                totalStorage: 512000
+            }
+        })
+    }
+
+    return new Response('Success', { status: 200 })
+})
+
 app.listen(process.env.API_PORT || 3000, () => {
     console.log(`Server started on port ${process.env.API_PORT || 3000}`);
 });
