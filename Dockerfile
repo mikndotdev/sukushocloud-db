@@ -16,8 +16,8 @@ COPY package.json bun.lockb /temp/prod/
 RUN cd /temp/prod && bun install --frozen-lockfile --production
 
 # generate Prisma client
-COPY . .
-RUN cd /temp/prod && bunx prisma generate
+COPY prisma /usr/src/app/prisma
+RUN cd /temp/dev && bunx prisma generate
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
@@ -28,8 +28,10 @@ COPY . .
 # copy production dependencies and source code into final image
 FROM base AS release
 COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /usr/src/app/main.ts .
+COPY --from=prerelease /usr/src/app/main.ts . 
 COPY --from=prerelease /usr/src/app/package.json .
+COPY --from=prerelease /usr/src/app/prisma ./prisma
+COPY --from=prerelease /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 
 # run the app
 USER bun
