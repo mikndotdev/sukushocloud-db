@@ -3,6 +3,7 @@
   "type": "module",
   "scripts": {
     "start": "bun run main.ts",
+    "dev": "bun --watch main.ts",
     "typecheck": "tsc"
   },
   "devDependencies": {
@@ -11,6 +12,7 @@
   },
   "dependencies": {
     "@elysiajs/bearer": "^1.1.2",
+    "@prisma/client": "5.20.0",
     "elysia": "1",
     "prisma": "^5.20.0"
   }
