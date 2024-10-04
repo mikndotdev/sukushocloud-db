@@ -15,6 +15,10 @@ RUN mkdir -p /temp/prod
 COPY package.json bun.lockb /temp/prod/
 RUN cd /temp/prod && bun install --frozen-lockfile --production
 
+# generate Prisma client
+COPY . .
+RUN bunx prisma generate
+
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
 FROM base AS prerelease
