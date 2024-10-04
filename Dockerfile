@@ -32,7 +32,7 @@ COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/main.ts . 
 COPY --from=prerelease /usr/src/app/package.json .
 COPY --from=prerelease /usr/src/app/prisma ./prisma
-COPY --from=prerelease /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=prerelease /temp/prod/node_modules/.prisma ./node_modules/.prisma
 
 # run the app
 USER bun
