@@ -223,6 +223,45 @@ app.post('/changeRegion', async ({ query }: { query: any }) => {
     return new Response(JSON.stringify({ region: user.preferredRegion }), { status: 200 })
 })
 
+app.post('/changeRegion', async ({ query }: { query: any }) => {
+    const key = query.key
+    const id = query.id as string
+    const header = query.header as string
+    const footer = query.footer as string
+    const color = query.color as string
+
+    if (!key || !id || !header || !footer || !color) {
+        return new Response('Missing parameters', { status: 400 })
+    }
+
+    if(!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', { status: 401 })
+    }
+
+    let user = await prisma.user.findUnique({
+        where: {
+            id: id
+        }
+    })
+
+    if (!user) {
+        return new Response('User not found', { status: 404 })
+    }
+
+    user = await prisma.user.update({
+        where: {
+            id: id
+        },
+        data: {
+            embedHeader: header,
+            embedFooter: footer,
+            embedColor: color
+        }
+    })
+
+    return new Response(JSON.stringify({ user }), { status: 200 })
+})
+
 app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any }) => {
     const id = body.meta.custom_data.cid
 
