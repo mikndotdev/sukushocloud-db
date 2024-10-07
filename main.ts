@@ -64,7 +64,7 @@ app.get('/getInfoFromKey', async ({ query }: { query: any }) => {
 app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
     const key = query.key
     const id = query.id as string
-    const { url, size, name } = body
+    const { url, size, name, shortUrl } = body
 
     if (!key || !id || !url || !size || !name) {
         return new Response('Missing parameters', { status: 400 })
@@ -93,6 +93,7 @@ app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
             id: crypto.randomBytes(16).toString('hex'),
             name: name,
             url: url,
+            shortUrl: shortUrl,
             size: size,
             userId: id
         }

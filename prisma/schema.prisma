@@ -23,6 +23,7 @@ model File {
   name   String
   size   Int
   url    String
+  shortUrl String
   userId String
   user   User   @relation(fields: [userId], references: [id])
 }
