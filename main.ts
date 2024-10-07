@@ -1,5 +1,4 @@
 import { Elysia } from 'elysia';
-import { bearer } from '@elysiajs/bearer'
 import { PrismaClient } from '@prisma/client';
 import crypto from 'node:crypto'
 
@@ -32,6 +31,31 @@ app.get('/getInfo', async ({ query }) => {
                 totalStorage: 2048,
             }
         })
+    }
+
+    return new Response(JSON.stringify(user), { status: 200 })
+})
+
+app.get('/getInfoFromKey', async ({ query }: { query: any }) => {
+    const key = query.key
+    const apiKey = query.apiKey as string
+
+    if (!key || !apiKey) {
+        return new Response('Missing parameters', { status: 400 })
+    }
+
+    if(!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', { status: 401 })
+    }
+
+    const user = await prisma.user.findFirst({
+        where: {
+            apiKey: apiKey
+        }
+    })
+
+    if (!user) {
+        return new Response('User not found', { status: 404 })
     }
 
     return new Response(JSON.stringify(user), { status: 200 })
