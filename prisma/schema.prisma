@@ -30,4 +30,5 @@ model File {
   userId String
   date   DateTime @default(now())
   user   User   @relation(fields: [userId], references: [id])
+  type  String
 }

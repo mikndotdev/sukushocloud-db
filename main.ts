@@ -61,10 +61,35 @@ app.get('/getInfoFromKey', async ({ query }: { query: any }) => {
     return new Response(JSON.stringify(user), { status: 200 })
 })
 
+app.get('/getFile' , async ({ query }: { query: any }) => {
+    const key = query.key
+    const id = query.id as string
+
+    if (!key || !id) {
+        return new Response('Missing parameters', { status: 400 })
+    }
+
+    if(!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', { status: 401 })
+    }
+
+    const file = await prisma.file.findUnique({
+        where: {
+            id: id
+        }
+    })
+
+    if (!file) {
+        return new Response('File not found', { status: 404 })
+    }
+
+    return new Response(JSON.stringify(file), { status: 200 })
+})
+
 app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
     const key = query.key
     const id = query.id as string
-    const { url, size, name, shortUrl } = body
+    const { url, size, name, shortUrl, fileId } = body
 
     if (!key || !id || !url || !size || !name) {
         return new Response('Missing parameters', { status: 400 })
@@ -90,12 +115,13 @@ app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
 
     const file = await prisma.file.create({
         data: {
-            id: crypto.randomBytes(16).toString('hex'),
+            id: fileId,
             name: name,
             url: url,
             shortUrl: shortUrl,
             size: size,
-            userId: id
+            userId: id,
+            type: 'image'
         }
     })
 
