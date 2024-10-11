@@ -91,8 +91,6 @@ app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
     const id = query.id as string
     const { url, size, name, shortUrl, fileId } = body
 
-    console.log(key, id, url, size, name, shortUrl, fileId)
-
     if (!key || !id || !url || !size || !name) {
         return new Response('Missing parameters', { status: 400 })
     }
