@@ -1,5 +1,5 @@
 import { Elysia } from 'elysia';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import crypto from 'node:crypto'
 
 const app = new Elysia()
@@ -130,7 +130,7 @@ app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
             id: id
         },
         data: {
-            usedStorage: { increment: size },
+            usedStorage: { increment: new Prisma.Decimal(size) },
             files: { connect: { id: file.id } }
         }
     })
@@ -166,7 +166,7 @@ app.delete('/deleteImage', async ({ query }: { query: any }) => {
             id: id
         },
         data: {
-            usedStorage: { decrement: file.size },
+            usedStorage: { decrement: new Prisma.Decimal(file.size) },
             files: { disconnect: { id: fileId } }
         }
     })
