@@ -17,8 +17,9 @@ model User {
   preferredRegion String @default("sjc")
   files        File[]
   embedHeader String @default("Screenshot")
-  embedFooter String @default("Powered by sukushocloud")
+  embedFooter String @default("Powered by sukusho.cloud")
   embedColor  String @default("#FF0000")
+  pageMainColor String @default("#2F1C42")
 }
 
 model File {
