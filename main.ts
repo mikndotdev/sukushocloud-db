@@ -40,7 +40,7 @@ app.get('/getInfo', async ({ query }) => {
     }
 
     const combinedJson = {
-        user,
+        ...user,
         files
     }
 
