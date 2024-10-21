@@ -291,7 +291,7 @@ app.post('/changeRegion', async ({ query }: { query: any }) => {
 app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any }) => {
     const id = body.meta.custom_data.cid
 
-    if (body.meta.event_name !== 'subscription_created') {
+    if (body.meta.event_name !== 'subscription_created' || body.meta.event_name !== 'subscription_expired') {
         return new Response('Invalid event', { status: 401 })
     }
 
@@ -302,6 +302,19 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
 
     if (!body.data.attributes.product_name.startsWith('sukushocloud')) {
         return new Response('Invalid product', { status: 401 })
+    }
+
+    if (body.meta.event_name === 'subscription_expired') {
+        await prisma.user.update({
+            where: {
+                id: id
+            },
+            data: {
+                plan: 'FREE',
+            }
+        })
+
+        return new Response('Success', { status: 200 })
     }
 
     const user = await prisma.user.findUnique({
@@ -315,6 +328,16 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
     }
 
     const newPlan = body.data.attributes.variant_id
+    const customerId = body.data.attributes.customer_id
+
+    await prisma.user.update({
+        where: {
+            id: id
+        },
+        data: {
+            cusId: customerId
+        }
+    })
 
     const isProLite = newPlan === 542402 || newPlan === 542478
     const isProStd = newPlan === 542413 || newPlan === 542479

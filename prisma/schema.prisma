@@ -10,6 +10,7 @@ datasource db {
 
 model User {
   id           String @id
+  cusId        String @default("")
   apiKey       String
   plan         String @default("FREE")
   totalStorage Decimal    @default(0)
