@@ -291,7 +291,7 @@ app.post('/changeRegion', async ({ query }: { query: any }) => {
 app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any }) => {
     const id = body.meta.custom_data.cid
 
-    if (body.meta.event_name !== 'subscription_created' || body.meta.event_name !== 'subscription_expired') {
+    if (!(body.meta.event_name === 'subscription_created' || body.meta.event_name === 'subscription_expired')) {
         return new Response('Invalid event', { status: 401 })
     }
 
