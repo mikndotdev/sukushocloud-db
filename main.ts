@@ -357,7 +357,7 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
             },
             data: {
                 plan: 'ProUlt',
-                totalStorage: 512000
+                totalStorage: 400000
             }
         })
     }
