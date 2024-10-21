@@ -311,6 +311,7 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
             },
             data: {
                 plan: 'FREE',
+                totalStorage: 2048
             }
         })
 
