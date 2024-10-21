@@ -39,7 +39,12 @@ app.get('/getInfo', async ({ query }) => {
         })
     }
 
-    return new Response(JSON.stringify({ user, files }), { status: 200 })
+    const combinedJson = {
+        user,
+        files
+    }
+
+    return new Response(JSON.stringify(combinedJson), { status: 200 })
 })
 
 app.get('/getInfoFromKey', async ({ query }: { query: any }) => {
