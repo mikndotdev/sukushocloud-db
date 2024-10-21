@@ -23,6 +23,12 @@ app.get('/getInfo', async ({ query }) => {
         }
     })
 
+    const files = await prisma.file.count({
+        where: {
+            userId: id
+        }
+    })
+
     if (!user) {
         user = await prisma.user.create({
             data: {
@@ -33,7 +39,7 @@ app.get('/getInfo', async ({ query }) => {
         })
     }
 
-    return new Response(JSON.stringify(user), { status: 200 })
+    return new Response(JSON.stringify({ user, files }), { status: 200 })
 })
 
 app.get('/getInfoFromKey', async ({ query }: { query: any }) => {
