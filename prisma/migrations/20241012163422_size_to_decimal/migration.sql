@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "File" ALTER COLUMN "size" SET DATA TYPE DECIMAL(65,30);

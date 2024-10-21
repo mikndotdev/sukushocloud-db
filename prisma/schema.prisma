@@ -12,19 +12,20 @@ model User {
   id           String @id
   apiKey       String
   plan         String @default("FREE")
-  totalStorage Int    @default(0)
-  usedStorage  Int    @default(0)
+  totalStorage Decimal    @default(0)
+  usedStorage  Decimal    @default(0)
   preferredRegion String @default("sjc")
   files        File[]
   embedHeader String @default("Screenshot")
-  embedFooter String @default("Powered by sukushocloud")
+  embedFooter String @default("Powered by sukusho.cloud")
   embedColor  String @default("#FF0000")
+  pageMainColor String @default("#2F1C42")
 }
 
 model File {
   id     String @id
   name   String
-  size   Int
+  size   Decimal
   url    String
   shortUrl String
   userId String
