@@ -1,7 +1,19 @@
 import { Elysia } from 'elysia';
 import { PrismaClient, Prisma } from '@prisma/client';
 import crypto from 'node:crypto'
-import { file } from 'bun';
+import {
+    getAuthenticatedUser,
+    lemonSqueezySetup,
+    type Customer,
+    getCustomer
+} from "@lemonsqueezy/lemonsqueezy.js";
+
+const apiKey = process.env.LMSQUEEZY_API_KEY || "";
+
+lemonSqueezySetup({
+    apiKey,
+    onError: (error) => console.error("Error!", error),
+});
 
 const app = new Elysia()
 const prisma = new PrismaClient()
@@ -417,6 +429,44 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
     }
 
     return new Response('Success', { status: 200 })
+})
+
+app.get("/getBillingPortalLink", async ({ query }: { query: any }) => {
+    const id = query.id as string
+    const key = query.key
+
+    if (!key || !id) {
+        return new Response('Missing parameters', { status: 400 })
+    }
+
+    if(!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id: id
+        }
+    })
+
+    if (!user) {
+        return new Response('User not found', { status: 404 })
+    }
+
+    if(user.cusId === 0) {
+        return new Response('No subscription found', { status: 404 })
+    }
+
+    const customerResponse = await getCustomer(user.cusId)
+    const cusData: Customer = customerResponse.data as Customer
+
+    if (!cusData) {
+        return new Response('Customer not found', { status: 404 })
+    }
+
+    const portalUrl = cusData.data.attributes.urls.customer_portal
+
+    return new Response(JSON.stringify({ portalUrl }), { status: 200 })
 })
 
 app.listen(process.env.API_PORT || 3000, () => {

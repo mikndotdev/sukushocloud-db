@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@elysiajs/bearer": "^1.1.2",
+    "@lemonsqueezy/lemonsqueezy.js": "^3.3.1",
     "@prisma/client": "5.20.0",
     "elysia": "1",
     "prisma": "^5.20.0"
