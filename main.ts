@@ -34,7 +34,7 @@ app.get('/getInfo', async ({ query }) => {
             data: {
                 id: id,
                 apiKey: crypto.randomBytes(16).toString('hex'),
-                totalStorage: 2048,
+                totalStorage: 1024,
             }
         })
     }
@@ -366,7 +366,7 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
             },
             data: {
                 plan: 'ProLite',
-                totalStorage: 61440
+                totalStorage: 51200
             }
         })
     }
@@ -378,7 +378,7 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
             },
             data: {
                 plan: 'ProStd',
-                totalStorage: 204800
+                totalStorage: 153600
             }
         })
     }
@@ -390,7 +390,7 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
             },
             data: {
                 plan: 'ProUlt',
-                totalStorage: 400000
+                totalStorage: 307200
             }
         })
     }
