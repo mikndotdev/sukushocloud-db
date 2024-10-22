@@ -330,14 +330,20 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
         return new Response('Success', { status: 200 })
     }
 
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
         where: {
             id: id
         }
     })
 
     if (!user) {
-        return new Response('User not found', { status: 404 })
+        user = await prisma.user.create({
+            data: {
+                id: id,
+                apiKey: crypto.randomBytes(16).toString('hex'),
+                totalStorage: 1024,
+            }
+        })
     }
 
     const newPlan = body.data.attributes.variant_id
