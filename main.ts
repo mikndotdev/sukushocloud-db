@@ -322,6 +322,7 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
             },
             data: {
                 plan: 'FREE',
+                subId: 0,
                 totalStorage: 1024
             }
         })
@@ -341,13 +342,15 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
 
     const newPlan = body.data.attributes.variant_id
     const customerId = body.data.attributes.customer_id
+    const subId = body.data.id
 
     await prisma.user.update({
         where: {
             id: id
         },
         data: {
-            cusId: customerId
+            cusId: customerId,
+            subId: subId
         }
     })
 
@@ -356,7 +359,7 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
     const isProUlt = newPlan === 542416 || newPlan === 542480
 
     if (!isProLite && !isProStd && !isProUlt) {
-        return new Response('Invalid plan', { status: 401 })
+        return new Response('Invalid plan', { status: 400 })
     }
 
     if (isProLite) {
