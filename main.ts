@@ -1,6 +1,7 @@
 import { Elysia } from 'elysia';
 import { PrismaClient, Prisma } from '@prisma/client';
 import crypto from 'node:crypto'
+import { file } from 'bun';
 
 const app = new Elysia()
 const prisma = new PrismaClient()
@@ -39,9 +40,17 @@ app.get('/getInfo', async ({ query }) => {
         })
     }
 
+    const filesList = await prisma.file.findMany({
+        where: {
+            userId: id
+        },
+        take: 5
+    })
+
     const combinedJson = {
         ...user,
-        files
+        files,
+        filesList
     }
 
     return new Response(JSON.stringify(combinedJson), { status: 200 })
