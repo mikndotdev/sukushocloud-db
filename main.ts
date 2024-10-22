@@ -129,7 +129,7 @@ app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
         return new Response('User not found', { status: 404 })
     }
 
-    if (user.totalStorage - user.usedStorage < size) {
+    if (Number(user.totalStorage) - Number(user.usedStorage) < size) {
         return new Response('Not enough storage', { status: 402 })
     }
 
