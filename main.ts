@@ -44,6 +44,9 @@ app.get('/getInfo', async ({ query }) => {
         where: {
             userId: id
         },
+        orderBy: {
+            date: 'desc'
+        },
         take: 5
     })
 
