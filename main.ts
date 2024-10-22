@@ -47,7 +47,7 @@ app.get('/getInfo', async ({ query }) => {
         orderBy: {
             date: 'desc'
         },
-        take: 5
+        take: 8
     })
 
     const combinedJson = {
