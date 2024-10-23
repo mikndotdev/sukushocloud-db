@@ -154,7 +154,7 @@ app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
             name: name,
             url: url,
             shortUrl: shortUrl,
-            size: size,
+            size: new Prisma.Decimal(size),
             userId: id,
             type: 'image'
         }
