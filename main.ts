@@ -71,6 +71,30 @@ app.get('/getInfo', async ({ query }) => {
     return new Response(JSON.stringify(combinedJson), { status: 200 })
 })
 
+app.get('/getFiles', async ({ query }: { query: any }) => {
+    const key = query.key
+    const id = query.id as string
+
+    if (!key || !id) {
+        return new Response('Missing parameters', { status: 400 })
+    }
+
+    if(!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', { status: 401 })
+    }
+
+    const files = await prisma.file.findMany({
+        where: {
+            userId: id
+        },
+        orderBy: {
+            date: 'desc'
+        }
+    })
+
+    return new Response(JSON.stringify(files), { status: 200 })
+})
+
 app.get('/getInfoFromKey', async ({ query }: { query: any }) => {
     const key = query.key
     const apiKey = query.apiKey as string
