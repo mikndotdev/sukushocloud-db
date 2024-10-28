@@ -273,10 +273,10 @@ app.post('/resetAPIKey', async ({ query }: { query: any }) => {
     return new Response(JSON.stringify({ key: user.apiKey }), { status: 200 })
 })
 
-app.post('/changeRegion', async ({ query }: { query: any }) => {
+app.post('/changeRegion', async ({ query, body }: { query: any, body: any }) => {
     const key = query.key
     const id = query.id as string
-    const region = query.region as string
+    const { region } = body
 
     console.log(key, id, region)
 
