@@ -275,10 +275,8 @@ app.post('/resetAPIKey', async ({ query }: { query: any }) => {
 
 app.post('/changeRegion', async ({ query, body }: { query: any, body: any }) => {
     const key = query.key
-    const id = query.id as string
+    const id = query.id
     const { region } = body
-
-    console.log(key, id, region)
 
     if (!key || !id || !region) {
         return new Response('Missing parameters', { status: 400 })
@@ -310,12 +308,10 @@ app.post('/changeRegion', async ({ query, body }: { query: any, body: any }) => 
     return new Response(JSON.stringify({ region: user.preferredRegion }), { status: 200 })
 })
 
-app.post('/changeRegion', async ({ query }: { query: any }) => {
+app.post('/changeEmbed', async ({ query, body }: { query: any, body: any }) => {
     const key = query.key
     const id = query.id as string
-    const header = query.header as string
-    const footer = query.footer as string
-    const color = query.color as string
+    const { header, footer, color } = body
 
     if (!key || !id || !header || !footer || !color) {
         return new Response('Missing parameters', { status: 400 })
