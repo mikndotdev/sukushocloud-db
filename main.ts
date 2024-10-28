@@ -278,7 +278,7 @@ app.post('/changeRegion', async ({ query }: { query: any }) => {
     const id = query.id as string
     const region = query.region as string
 
-    console.log(key, id, region)
+    console.debug(key, id, region)
 
     if (!key || !id || !region) {
         return new Response('Missing parameters', { status: 400 })
