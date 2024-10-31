@@ -17,6 +17,7 @@ const minioClient = new Minio.Client({
     useSSL: true,
     accessKey: process.env.S3_ACCESS_KEY || "",
     secretKey: process.env.S3_SECRET_KEY || "",
+    region: "auto"
 })
 
 const app = new Elysia()
@@ -224,9 +225,9 @@ app.delete('/deleteImage', async ({query}: { query: any }) => {
         return new Response('File not found', {status: 404})
     }
 
-    await minioClient.removeObject('sukushocloud', `${id}/${fileId}`)
+    await minioClient.removeObject('sukushocloud', `${id}/${file.name}`)
 
-    const cachePurge = await fetch(`https://api.bunny.net/purge?url=https://sukushocloud.b-cdn.net/${id}/${fileId}`, {
+    const cachePurge = await fetch(`https://api.bunny.net/purge?url=https://sukushocloud.b-cdn.net/${id}/${file.name}`, {
         method: 'POST',
         headers: {
             'AccessKey': process.env.BUNNYCDN_ACCESS_KEY || ''
