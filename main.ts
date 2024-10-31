@@ -1,4 +1,5 @@
 import {Elysia} from 'elysia';
+import * as Minio from 'minio';
 import {Prisma, PrismaClient} from '@prisma/client';
 import crypto from 'node:crypto'
 import {type Customer, getCustomer, lemonSqueezySetup} from "@lemonsqueezy/lemonsqueezy.js";
@@ -9,6 +10,14 @@ lemonSqueezySetup({
     apiKey,
     onError: (error) => console.error("Error!", error),
 });
+
+const minioClient = new Minio.Client({
+    endPoint: "fly.storage.tigris.dev",
+    port: 443,
+    useSSL: true,
+    accessKey: process.env.S3_ACCESS_KEY || "",
+    secretKey: process.env.S3_SECRET_KEY || "",
+})
 
 const app = new Elysia()
 const prisma = new PrismaClient()
@@ -214,6 +223,15 @@ app.delete('/deleteImage', async ({query}: { query: any }) => {
     if (!file) {
         return new Response('File not found', {status: 404})
     }
+
+    await minioClient.removeObject('sukushocloud', `${id}/${fileId}`)
+
+    const cachePurge = await fetch(`https://api.bunny.net/purge?url=https://sukushocloud.b-cdn.net/${id}/${fileId}`, {
+        method: 'POST',
+        headers: {
+            'AccessKey': process.env.BUNNYCDN_ACCESS_KEY || ''
+        }
+    })
 
     await prisma.file.delete({
         where: {
