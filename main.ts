@@ -1,12 +1,7 @@
-import { Elysia } from 'elysia';
-import { PrismaClient, Prisma } from '@prisma/client';
+import {Elysia} from 'elysia';
+import {Prisma, PrismaClient} from '@prisma/client';
 import crypto from 'node:crypto'
-import {
-    getAuthenticatedUser,
-    lemonSqueezySetup,
-    type Customer,
-    getCustomer
-} from "@lemonsqueezy/lemonsqueezy.js";
+import {type Customer, getCustomer, lemonSqueezySetup} from "@lemonsqueezy/lemonsqueezy.js";
 
 const apiKey = process.env.LMSQUEEZY_API_KEY || "";
 
@@ -18,16 +13,16 @@ lemonSqueezySetup({
 const app = new Elysia()
 const prisma = new PrismaClient()
 
-app.get('/getInfo', async ({ query }) => {
+app.get('/getInfo', async ({query}) => {
     const key = query.key
     const id = query.id as string
 
     if (!key || !id) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     let user = await prisma.user.findUnique({
@@ -68,19 +63,19 @@ app.get('/getInfo', async ({ query }) => {
         filesList
     }
 
-    return new Response(JSON.stringify(combinedJson), { status: 200 })
+    return new Response(JSON.stringify(combinedJson), {status: 200})
 })
 
-app.get('/getFiles', async ({ query }: { query: any }) => {
+app.get('/getFiles', async ({query}: { query: any }) => {
     const key = query.key
     const id = query.id as string
 
     if (!key || !id) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     const files = await prisma.file.findMany({
@@ -92,19 +87,19 @@ app.get('/getFiles', async ({ query }: { query: any }) => {
         }
     })
 
-    return new Response(JSON.stringify(files), { status: 200 })
+    return new Response(JSON.stringify(files), {status: 200})
 })
 
-app.get('/getInfoFromKey', async ({ query }: { query: any }) => {
+app.get('/getInfoFromKey', async ({query}: { query: any }) => {
     const key = query.key
     const apiKey = query.apiKey as string
 
     if (!key || !apiKey) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     const user = await prisma.user.findFirst({
@@ -114,22 +109,22 @@ app.get('/getInfoFromKey', async ({ query }: { query: any }) => {
     })
 
     if (!user) {
-        return new Response('User not found', { status: 404 })
+        return new Response('User not found', {status: 404})
     }
 
-    return new Response(JSON.stringify(user), { status: 200 })
+    return new Response(JSON.stringify(user), {status: 200})
 })
 
-app.get('/getFile' , async ({ query }: { query: any }) => {
+app.get('/getFile', async ({query}: { query: any }) => {
     const key = query.key
     const id = query.id as string
 
     if (!key || !id) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     const file = await prisma.file.findUnique({
@@ -139,23 +134,23 @@ app.get('/getFile' , async ({ query }: { query: any }) => {
     })
 
     if (!file) {
-        return new Response('File not found', { status: 404 })
+        return new Response('File not found', {status: 404})
     }
 
-    return new Response(JSON.stringify(file), { status: 200 })
+    return new Response(JSON.stringify(file), {status: 200})
 })
 
-app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
+app.post('/addImage', async ({query, body}: { query: any, body: any }) => {
     const key = query.key
     const id = query.id as string
-    const { url, size, name, shortUrl, fileId } = body
+    const {url, size, name, shortUrl, fileId} = body
 
     if (!key || !id || !url || !size || !name) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     const user = await prisma.user.findUnique({
@@ -165,11 +160,11 @@ app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
     })
 
     if (!user) {
-        return new Response('User not found', { status: 404 })
+        return new Response('User not found', {status: 404})
     }
 
     if (Number(user.totalStorage) - Number(user.usedStorage) < size) {
-        return new Response('Not enough storage', { status: 402 })
+        return new Response('Not enough storage', {status: 402})
     }
 
     const file = await prisma.file.create({
@@ -189,25 +184,25 @@ app.post('/addImage', async ({ query, body }: { query: any, body: any }) => {
             id: id
         },
         data: {
-            usedStorage: { increment: new Prisma.Decimal(size) },
-            files: { connect: { id: file.id } }
+            usedStorage: {increment: new Prisma.Decimal(size)},
+            files: {connect: {id: file.id}}
         }
     })
 
-    return new Response(JSON.stringify(file), { status: 200 })
+    return new Response(JSON.stringify(file), {status: 200})
 })
 
-app.delete('/deleteImage', async ({ query }: { query: any }) => {
+app.delete('/deleteImage', async ({query}: { query: any }) => {
     const key = query.key
     const id = query.id as string
     const fileId = query.fileId as string
 
     if (!key || !id || !fileId) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     const file = await prisma.file.findUnique({
@@ -217,18 +212,8 @@ app.delete('/deleteImage', async ({ query }: { query: any }) => {
     })
 
     if (!file) {
-        return new Response('File not found', { status: 404 })
+        return new Response('File not found', {status: 404})
     }
-
-    await prisma.user.update({
-        where: {
-            id: id
-        },
-        data: {
-            usedStorage: { decrement: new Prisma.Decimal(file.size) },
-            files: { disconnect: { id: fileId } }
-        }
-    })
 
     await prisma.file.delete({
         where: {
@@ -236,19 +221,28 @@ app.delete('/deleteImage', async ({ query }: { query: any }) => {
         }
     })
 
-    return new Response('File deleted', { status: 200 })
+    await prisma.user.update({
+        where: {
+            id: id
+        },
+        data: {
+            usedStorage: {decrement: new Prisma.Decimal(file.size)}
+        }
+    })
+
+    return new Response('File deleted', {status: 200})
 })
 
-app.post('/resetAPIKey', async ({ query }: { query: any }) => {
+app.post('/resetAPIKey', async ({query}: { query: any }) => {
     const key = query.key
     const id = query.id as string
 
     if (!key || !id) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     const user = await prisma.user.findUnique({
@@ -258,7 +252,7 @@ app.post('/resetAPIKey', async ({ query }: { query: any }) => {
     })
 
     if (!user) {
-        return new Response('User not found', { status: 404 })
+        return new Response('User not found', {status: 404})
     }
 
     await prisma.user.update({
@@ -270,20 +264,20 @@ app.post('/resetAPIKey', async ({ query }: { query: any }) => {
         }
     })
 
-    return new Response(JSON.stringify({ key: user.apiKey }), { status: 200 })
+    return new Response(JSON.stringify({key: user.apiKey}), {status: 200})
 })
 
-app.post('/changeRegion', async ({ query, body }: { query: any, body: any }) => {
+app.post('/changeRegion', async ({query, body}: { query: any, body: any }) => {
     const key = query.key
     const id = query.id
-    const { region } = body
+    const {region} = body
 
     if (!key || !id || !region) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     let user = await prisma.user.findUnique({
@@ -293,7 +287,7 @@ app.post('/changeRegion', async ({ query, body }: { query: any, body: any }) => 
     })
 
     if (!user) {
-        return new Response('User not found', { status: 404 })
+        return new Response('User not found', {status: 404})
     }
 
     user = await prisma.user.update({
@@ -305,20 +299,20 @@ app.post('/changeRegion', async ({ query, body }: { query: any, body: any }) => 
         }
     })
 
-    return new Response(JSON.stringify({ region: user.preferredRegion }), { status: 200 })
+    return new Response(JSON.stringify({region: user.preferredRegion}), {status: 200})
 })
 
-app.post('/changeEmbed', async ({ query, body }: { query: any, body: any }) => {
+app.post('/changeEmbed', async ({query, body}: { query: any, body: any }) => {
     const key = query.key
     const id = query.id as string
-    const { header, footer, color } = body
+    const {header, footer, color} = body
 
     if (!key || !id || !header || !footer || !color) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     let user = await prisma.user.findUnique({
@@ -328,7 +322,7 @@ app.post('/changeEmbed', async ({ query, body }: { query: any, body: any }) => {
     })
 
     if (!user) {
-        return new Response('User not found', { status: 404 })
+        return new Response('User not found', {status: 404})
     }
 
     user = await prisma.user.update({
@@ -342,23 +336,23 @@ app.post('/changeEmbed', async ({ query, body }: { query: any, body: any }) => {
         }
     })
 
-    return new Response(JSON.stringify({ user }), { status: 200 })
+    return new Response(JSON.stringify({user}), {status: 200})
 })
 
-app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any }) => {
+app.post('/lemsqzy', async ({body}: { request: any, body: any, headers: any }) => {
     const id = body.meta.custom_data.cid
 
     if (!(body.meta.event_name === 'subscription_created' || body.meta.event_name === 'subscription_expired')) {
-        return new Response('Invalid event', { status: 401 })
+        return new Response('Invalid event', {status: 401})
     }
 
     if (!id) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
 
     if (!body.data.attributes.product_name.startsWith('sukushocloud')) {
-        return new Response('Invalid product', { status: 401 })
+        return new Response('Invalid product', {status: 401})
     }
 
     if (body.meta.event_name === 'subscription_expired') {
@@ -373,7 +367,7 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
             }
         })
 
-        return new Response('Success', { status: 200 })
+        return new Response('Success', {status: 200})
     }
 
     let user = await prisma.user.findUnique({
@@ -411,7 +405,7 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
     const isProUlt = newPlan === 542416 || newPlan === 542480
 
     if (!isProLite && !isProStd && !isProUlt) {
-        return new Response('Invalid plan', { status: 400 })
+        return new Response('Invalid plan', {status: 400})
     }
 
     if (isProLite) {
@@ -450,19 +444,19 @@ app.post('/lemsqzy', async ({ body }: { request: any, body: any, headers: any })
         })
     }
 
-    return new Response('Success', { status: 200 })
+    return new Response('Success', {status: 200})
 })
 
-app.get("/getBillingPortalLink", async ({ query }: { query: any }) => {
+app.get("/getBillingPortalLink", async ({query}: { query: any }) => {
     const id = query.id as string
     const key = query.key
 
     if (!key || !id) {
-        return new Response('Missing parameters', { status: 400 })
+        return new Response('Missing parameters', {status: 400})
     }
 
-    if(!(key === process.env.SIGNING_KEY)) {
-        return new Response('Invalid key', { status: 401 })
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
     }
 
     const user = await prisma.user.findUnique({
@@ -472,23 +466,23 @@ app.get("/getBillingPortalLink", async ({ query }: { query: any }) => {
     })
 
     if (!user) {
-        return new Response('User not found', { status: 404 })
+        return new Response('User not found', {status: 404})
     }
 
-    if(user.cusId === 0) {
-        return new Response('No subscription found', { status: 404 })
+    if (user.cusId === 0) {
+        return new Response('No subscription found', {status: 404})
     }
 
     const customerResponse = await getCustomer(user.cusId)
     const cusData: Customer = customerResponse.data as Customer
 
     if (!cusData) {
-        return new Response('Customer not found', { status: 404 })
+        return new Response('Customer not found', {status: 404})
     }
 
     const portalUrl = cusData.data.attributes.urls.customer_portal
 
-    return new Response(JSON.stringify({ portalUrl }), { status: 200 })
+    return new Response(JSON.stringify({portalUrl}), {status: 200})
 })
 
 app.listen(process.env.API_PORT || 3000, () => {
