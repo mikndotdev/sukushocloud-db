@@ -358,6 +358,40 @@ app.post('/changeEmbed', async ({query, body}: { query: any, body: any }) => {
     return new Response(JSON.stringify({user}), {status: 200})
 })
 
+app.post('/changePrefetch', async ({query, body}: { query: any, body: any }) => {
+    const key = query.key
+    const id = query.id
+
+    if (!key || !id) {
+        return new Response('Missing parameters', {status: 400})
+    }
+
+    if (!(key === process.env.SIGNING_KEY)) {
+        return new Response('Invalid key', {status: 401})
+    }
+
+    let user = await prisma.user.findUnique({
+        where: {
+            id: id
+        }
+    })
+
+    if (!user) {
+        return new Response('User not found', {status: 404})
+    }
+
+    user = await prisma.user.update({
+        where: {
+            id: id
+        },
+        data: {
+            allowDiscordPrefetch: !user.allowDiscordPrefetch
+        }
+    })
+
+    return new Response(JSON.stringify({user}), {status: 200})
+})
+
 app.post('/lemsqzy', async ({body}: { request: any, body: any, headers: any }) => {
     const id = body.meta.custom_data.cid
 

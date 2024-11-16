@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
 }
 
@@ -9,29 +9,30 @@ datasource db {
 }
 
 model User {
-  id           String @id
-  cusId        Int @default(0)
-  subId        Int @default(0)
-  apiKey       String
-  plan         String @default("FREE")
-  totalStorage Decimal    @default(0)
-  usedStorage  Decimal    @default(0)
-  preferredRegion String @default("sjc")
-  files        File[]
-  embedHeader String @default("Screenshot")
-  embedFooter String @default("Powered by sukusho.cloud")
-  embedColor  String @default("#FF0000")
-  pageMainColor String @default("#2F1C42")
+  id                   String  @id
+  cusId                Int     @default(0)
+  subId                Int     @default(0)
+  apiKey               String
+  plan                 String  @default("FREE")
+  totalStorage         Decimal @default(0)
+  usedStorage          Decimal @default(0)
+  preferredRegion      String  @default("sjc")
+  files                File[]
+  embedHeader          String  @default("Screenshot")
+  embedFooter          String  @default("Powered by sukusho.cloud")
+  embedColor           String  @default("#FF0000")
+  pageMainColor        String  @default("#2F1C42")
+  allowDiscordPrefetch Boolean @default(false)
 }
 
 model File {
-  id     String @id
-  name   String
-  size   Decimal
-  url    String
+  id       String   @id
+  name     String
+  size     Decimal
+  url      String
   shortUrl String
-  userId String
-  date   DateTime @default(now())
-  user   User   @relation(fields: [userId], references: [id])
-  type  String
+  userId   String
+  date     DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+  type     String
 }
